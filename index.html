@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SENSIOBMAX ULTIMATE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap');
+        body { background: #010409; font-family: 'Segoe UI', sans-serif; color: white; margin: 0; overflow: hidden; }
+        .font-cyber { font-family: 'Orbitron', sans-serif; }
+        .glass { background: rgba(13, 17, 23, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
+        .popup { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        .hidden { display: none !important; }
+        #particles-js { position: fixed; width: 100%; height: 100%; z-index: -1; }
+        .marquee { overflow: hidden; white-space: nowrap; background: rgba(59, 130, 246, 0.1); py: 2; border-bottom: 1px solid rgba(59, 130, 246, 0.2); }
+        .marquee p { display: inline-block; animation: marquee 15s linear infinite; font-size: 10px; font-weight: 900; color: #60a5fa; text-transform: uppercase; }
+        @keyframes marquee { 0% { transform: translate(100%, 0); } 100% { transform: translate(-100%, 0); } }
+        .btn-click:active { transform: scale(0.95); transition: 0.1s; }
+        #maintenance-screen { position: fixed; inset: 0; background: black; z-index: 9999; display: flex; align-items: center; justify-content: center; color: white; font-family: 'Orbitron', sans-serif; }
+    </style>
+</head>
+<body>
+
+    <div id="particles-js"></div>
+
+    <div id="maintenance-screen" class="hidden">
+        <div class="text-center">
+            <h1 class="text-2xl font-black text-red-600 animate-pulse">HỆ THỐNG ĐANG BẢO TRÌ</h1>
+            <p class="text-[10px] mt-4 text-gray-500 uppercase tracking-widest">Vui lòng quay lại sau 2 tiếng</p>
+        </div>
+    </div>
+
+    <div id="auth-screen" class="popup">
+        <div id="login-box" class="glass w-[90%] max-w-[380px] p-8 rounded-[3rem] text-center shadow-2xl">
+            <h2 class="font-cyber text-blue-500 font-black mb-6 uppercase text-xl">ĐĂNG NHẬP</h2>
+            <input type="text" id="reg-user" placeholder="Tên tài khoản..." class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl mb-4 outline-none focus:border-blue-500 text-sm">
+            <input type="password" id="reg-pass" placeholder="Mật khẩu..." class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl mb-6 outline-none focus:border-blue-500 text-sm">
+            <button onclick="handleAuth('login')" class="w-full bg-blue-600 py-4 rounded-2xl font-black btn-click uppercase text-[10px]">Xác nhận vào Shop</button>
+            <p class="mt-4 text-[10px] text-gray-500">Chưa có tài khoản? <span class="text-blue-400 cursor-pointer" onclick="toggleAuthBox('reg')">Đăng ký ngay</span></p>
+        </div>
+
+        <div id="reg-box" class="glass w-[90%] max-w-[380px] p-8 rounded-[3rem] text-center shadow-2xl hidden">
+            <h2 class="font-cyber text-green-500 font-black mb-6 uppercase text-xl">ĐĂNG KÝ</h2>
+            <input type="text" id="new-user" placeholder="Tạo tài khoản..." class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl mb-4 outline-none focus:border-green-500 text-sm">
+            <input type="password" id="new-pass" placeholder="Tạo mật khẩu..." class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl mb-6 outline-none focus:border-green-500 text-sm">
+            <button onclick="handleAuth('register')" class="w-full bg-green-600 py-4 rounded-2xl font-black btn-click uppercase text-[10px]">Tạo tài khoản</button>
+            <p class="mt-4 text-[10px] text-gray-500" onclick="toggleAuthBox('login')">Đã có tài khoản? <span class="text-green-400 cursor-pointer">Quay lại</span></p>
+        </div>
+    </div>
+
+    <div id="main-content" class="hidden h-screen flex flex-col">
+        <div class="marquee py-2"><p>ADMIN: NGUYỄN QUỐC HUY – PHIÊN BẢN VIP ULTIMATE | NẠP TỰ ĐỘNG SAU 30S</p></div>
+        
+        <header class="p-5 flex items-center justify-between glass">
+            <button onclick="showMenu()" class="text-3xl text-blue-500">☰</button>
+            <div class="text-center">
+                <h1 class="text-xl font-black italic text-blue-500 font-cyber">SENSIOBMAX</h1>
+                <p class="text-[8px] text-green-400 font-bold uppercase">● ONLINE: <span id="online-count">5.394</span></p>
+            </div>
+            <div class="text-right">
+                <p class="text-[10px] font-black text-yellow-500" id="user-balance">0đ</p>
+                <button onclick="showAdmin()" class="bg-red-600 px-2 py-0.5 rounded text-[8px] font-black mt-1">ADMIN</button>
+            </div>
+        </header>
+
+        <main class="p-4 flex-1 overflow-y-auto space-y-6">
+            <div class="glass p-5 rounded-[2rem] border-b-4 border-blue-600">
+                <div class="flex justify-between items-center mb-4">
+                    <p class="text-[10px] font-black text-blue-400 uppercase">Dòng tiền hệ thống</p>
+                    <p class="text-lg font-black font-cyber" id="system-money">23.779.240đ</p>
+                </div>
+                <div id="chart" class="flex items-end justify-between h-20 px-2"></div>
+            </div>
+
+            <h2 class="text-[10px] font-black uppercase text-center tracking-[0.3em] text-blue-500">Sản phẩm nổi bật</h2>
+            <div id="product-list" class="space-y-3"></div>
+        </main>
+    </div>
+
+    <div id="menu-box" class="popup hidden" onclick="hideAll()">
+        <div class="glass w-[85%] max-w-[350px] p-8 rounded-[3rem] space-y-4" onclick="event.stopPropagation()">
+            <h3 class="text-center font-cyber text-blue-500 font-black uppercase text-sm mb-6">MENU HỆ THỐNG</h3>
+            <button onclick="showBank()" class="w-full p-4 bg-white/5 rounded-2xl text-left text-[10px] font-bold uppercase italic text-yellow-500">💳 Nạp Tiền Bank/Card</button>
+            <button onclick="checkCTV()" class="w-full p-4 bg-blue-600/20 rounded-2xl text-left text-[10px] font-bold uppercase italic text-blue-400">🌟 Mở khóa CTV (>1TR)</button>
+            <a href="https://zalo.me/0397208110" class="block w-full p-4 bg-white/5 rounded-2xl text-left text-[10px] font-bold uppercase italic text-red-500">📞 Liên hệ Admin Huy</a>
+            <p class="text-center text-[8px] text-gray-600 mt-6 uppercase">Bản quyền thuộc về Sensiobmax © 2026</p>
+        </div>
+    </div>
+
+    <div id="bank-box" class="popup hidden" onclick="hideAll()">
+        <div class="glass w-[90%] p-8 rounded-[3rem] text-center max-w-[380px]" onclick="event.stopPropagation()">
+            <img src="https://api.vietqr.io/image/970422-0397208110-3796D5.jpg?accountName=NGUYEN%20QUOC%20HUY" class="w-56 h-56 mx-auto rounded-2xl border-4 border-white/5 mb-4">
+            <p class="text-[10px] font-bold bg-blue-500/10 p-3 rounded-xl uppercase tracking-widest">Nội dung: <span id="user-tag" class="text-blue-500">...</span></p>
+            <button onclick="hideAll()" class="mt-6 w-full bg-blue-600 py-4 rounded-2xl font-black text-[10px]">ĐÓNG</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        particlesJS("particles-js", { particles: { number: { value: 60 }, color: { value: "#3b82f6" }, shape: { type: "circle" }, opacity: { value: 0.5 }, size: { value: 2 }, move: { enable: true, speed: 4 } } });
+
+        let userBalance = 0;
+        let totalDeposit = 0;
+        let isMaintenance = false;
+        let isAdmin = false;
+        
+        // Cơ sở dữ liệu tài khoản (Lưu tạm trong session)
+        let accounts = { "huyadmin": "huyvip123" }; 
+        const downloadLink = "https://www.mediafire.com/file/o7wg8unenefak4w/DP_CLIENT_v2.2_+.apks/file";
+
+        const products = [
+            {n: "FAKE LAG FILE V1", p: 50000, lb: "1.250", ld: "5.820"},
+            {n: "AIMLOCK ADR LITE", p: 50000, lb: "950", ld: "4.120"},
+            {n: "NHẸ TÂM ADR VIP", p: 50000, lb: "2.100", ld: "8.900"},
+            {n: "NHẸ TÂM V2 ADR", p: 100000, lb: "840", ld: "3.200"},
+            {n: "SENSI VIP MENU PRO", p: 200000, lb: "520", ld: "1.100"},
+            {n: "HEADLOCK ADR V1", p: 100000, lb: "3.200", ld: "12.000"},
+            {n: "ĐỊNH VỊ ANDROID", p: 150000, lb: "410", ld: "980"},
+            {n: "ANTIBAN VIP 500K", p: 500000, lb: "120", ld: "450"}
+        ];
+
+        function handleAuth(type) {
+            if(type === 'register') {
+                const u = document.getElementById('new-user').value;
+                const p = document.getElementById('new-pass').value;
+                if(!u || !p) return alert("Vui lòng nhập đủ!");
+                accounts[u] = p;
+                alert("Đăng ký thành công! Hãy đăng nhập.");
+                toggleAuthBox('login');
+            } else {
+                const u = document.getElementById('reg-user').value;
+                const p = document.getElementById('reg-pass').value;
+                if(accounts[u] && accounts[u] === p) {
+                    document.getElementById('user-tag').innerText = "NAP " + u.toUpperCase();
+                    document.getElementById('auth-screen').style.display = 'none';
+                    document.getElementById('main-content').classList.remove('hidden');
+                    renderProducts();
+                    startSystem();
+                } else { alert("Sai tài khoản hoặc mật khẩu!"); }
+            }
+        }
+
+        function renderProducts() {
+            const list = document.getElementById('product-list');
+            list.innerHTML = "";
+            products.forEach(item => {
+                const online = Math.floor(Math.random() * 300) + 50;
+                list.innerHTML += `
+                    <div class="glass p-5 rounded-[1.8rem] flex justify-between items-center border-l-4 border-blue-600">
+                        <div>
+                            <p class="text-[11px] font-black uppercase italic">${item.n}</p>
+                            <p class="text-[9px] text-blue-400 font-bold">${item.p.toLocaleString()}đ</p>
+                            <div class="flex gap-2 text-[7px] text-gray-500 font-bold mt-2 uppercase">
+                                <span>Bán: ${item.lb}</span><span>Dùng: ${item.ld}</span><span class="text-green-500">Online: ${online}</span>
+                            </div>
+                        </div>
+                        <button onclick="buyProduct(${item.p}, '${item.n}')" class="bg-blue-600 px-5 py-2.5 rounded-xl text-[9px] font-black btn-click">MUA</button>
+                    </div>`;
+            });
+        }
+
+        function showAdmin() {
+            const pass = prompt("NHẬP MẬT MÃ ADMIN TỐI MẬT:");
+            if(pass === "quochuy_master_2026") {
+                isAdmin = true;
+                const cmd = prompt("LỆNH ADMIN:\n1. BẢO TRÌ (Màn hình đen 2h)\n2. TẮT BẢO TRÌ\nNhập số:");
+                if(cmd === "1") {
+                    isMaintenance = true;
+                    alert("HỆ THỐNG SẼ BỊ KHÓA TRONG 2 GIỜ!");
+                    document.getElementById('maintenance-screen').classList.remove('hidden');
+                } else if(cmd === "2") {
+                    isMaintenance = false;
+                    document.getElementById('maintenance-screen').classList.add('hidden');
+                    alert("ĐÃ MỞ LẠI HỆ THỐNG!");
+                }
+            } else { alert("CẢNH BÁO: SAI MẬT MÃ!"); }
+        }
+
+        function buyProduct(price, name) {
+            if (userBalance >= price) {
+                userBalance -= price;
+                updateUI();
+                alert("Thành công! Đang tải file...");
+                window.location.href = downloadLink;
+            } else { alert("Số dư không đủ!"); showBank(); }
+        }
+
+        function toggleAuthBox(type) {
+            document.getElementById('login-box').classList.add('hidden');
+            document.getElementById('reg-box').classList.add('hidden');
+            document.getElementById(type + '-box').classList.remove('hidden');
+        }
+
+        function updateUI() { document.getElementById('user-balance').innerText = userBalance.toLocaleString() + "đ"; }
+        function showMenu() { document.getElementById('menu-box').classList.remove('hidden'); }
+        function showBank() { hideAll(); document.getElementById('bank-box').classList.remove('hidden'); }
+        function hideAll() { document.getElementById('menu-box').classList.add('hidden'); document.getElementById('bank-box').classList.add('hidden'); }
+
+        function startSystem() {
+            const chart = document.getElementById('chart');
+            for(let i=0; i<15; i++) chart.innerHTML += `<div class="w-2 bg-blue-600 rounded-t-sm" style="height: ${Math.random()*70+20}%"></div>`;
+            setInterval(() => {
+                document.getElementById('online-count').innerText = (Math.floor(Math.random() * 6000) + 1000).toLocaleString();
+                document.getElementById('system-money').innerText = (Math.floor(Math.random() * 30000000) + 10000000).toLocaleString() + "đ";
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
